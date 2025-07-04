@@ -1,0 +1,10 @@
+[
+  [
+    "what is a linear regression",
+    "Linear regression is a supervised machine learning algorithm used to predict a continuous dependent variable based on one or more independent variables.  It assumes a linear relationship between the independent and dependent variables, meaning the change in the dependent variable is proportional to the change in the independent variable(s).  This relationship is represented by a straight line (or a plane in multiple linear regression) that best fits the data points.  The goal is to find the best-fitting line by minimizing the difference between the predicted values and the actual values.  In simple linear regression, the equation of the line is y = mx + b, where 'y' is the predicted value, 'x' is the independent variable, 'm' is the slope representing the relationship's strength and direction, and 'b' is the y-intercept."
+  ],
+  [
+    "what is multi variate distribution",
+    "A multivariate distribution describes the probability distribution of multiple random variables simultaneously.  Instead of looking at each variable in isolation, it considers how they behave and interact together.  For example, imagine you're analyzing the height and weight of a population.  A multivariate distribution would describe the joint probability of observing specific height and weight combinations.  It allows us to understand not only the individual distributions of height and weight but also the relationship between them (e.g., are taller people generally heavier?).  These variables can be discrete (like the number of heads when flipping two coins) or continuous (like height and weight)."
+  ]
+]
