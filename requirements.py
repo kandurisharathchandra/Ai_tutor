@@ -25,3 +25,5 @@ pillow
 protobuf==3.20.3
 InstructorEmbedding
 langchain-chroma
+fitz
+PIL

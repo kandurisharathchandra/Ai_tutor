@@ -3,13 +3,12 @@ import os
 import json
 from datetime import datetime
 from dotenv import load_dotenv
-from document_loaders.load_documents import load_documents_from_folder, hash_file
-from embedding_docs.embed_and_store import CHROMA_PATH, INDEX_FILE
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
 from chains.chain import build_qa_chain
+from embedding_docs.embed_and_store import CHROMA_PATH, INDEX_FILE, embed_new_documents, IMAGE_CHROMA_PATH
 
 load_dotenv()
 
@@ -27,14 +26,14 @@ if "session_id" not in st.session_state:
     st.session_state.chat_chain = None
     st.session_state.pending_followup = None
 
-# --- Chat History ---
+# --- Chat History File ---
 session_id = st.session_state.session_id
 chat_path = os.path.join(SESSIONS_FOLDER, f"{session_id}.json")
 if os.path.exists(chat_path):
     with open(chat_path, "r") as f:
         st.session_state.chat_history = [tuple(pair) for pair in json.load(f)]
 
-# --- Sidebar: Sessions ---
+# --- Sidebar Sessions ---
 st.sidebar.title("🗂️ Saved Sessions")
 sessions = sorted([f for f in os.listdir(SESSIONS_FOLDER) if f.endswith(".json")], reverse=True)
 selected_session = st.sidebar.selectbox("Select session", sessions, index=0 if sessions else None)
@@ -52,55 +51,20 @@ if st.sidebar.button("🗑️ Delete This Session"):
     st.sidebar.success("Deleted.")
     st.rerun()
 
-# --- Title and Upload ---
-st.title("📄 RAG App with Persistent Vector DB and Gemini QA")
+# --- Title & Upload ---
+st.title("📄 RAG App with Image-Aware QA")
 with st.expander("➕ Upload PDFs", expanded=False):
     uploaded_files = st.file_uploader("Upload PDFs", type="pdf", accept_multiple_files=True)
 
-# --- Handle File Upload ---
+# --- Embedding ---
 embedding_function = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
-
-def embed_and_store_new_docs():
-    if os.path.exists(INDEX_FILE):
-        with open(INDEX_FILE, "r") as f:
-            indexed_hashes = json.load(f)
-    else:
-        indexed_hashes = {}
-
-    doc_tuples = load_documents_from_folder(DOCUMENTS_FOLDER)
-    new_docs = []
-    for file_name, page_num, text, file_hash in doc_tuples:
-        if indexed_hashes.get(file_name) != file_hash:
-            new_docs.append((file_name, page_num, text, file_hash))
-
-    if not new_docs:
-        return  # No new docs
-
-    st.info(f"📄 Found {len(new_docs)} new or changed pages. Embedding...")
-
-    documents = [Document(page_content=text, metadata={"source": file_name, "page": page_num})
-                 for file_name, page_num, text, _ in new_docs]
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-    split_docs = splitter.split_documents(documents)
-
-    if os.path.exists(CHROMA_PATH) and os.listdir(CHROMA_PATH):
-        vectorstore = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
-        vectorstore.add_documents(split_docs)
-    else:
-        vectorstore = Chroma.from_documents(split_docs, embedding_function, persist_directory=CHROMA_PATH)
-
-    # Update hashes
-    for file_name, _, _, file_hash in new_docs:
-        indexed_hashes[file_name] = file_hash
-    with open(INDEX_FILE, "w") as f:
-        json.dump(indexed_hashes, f, indent=2)
 
 if uploaded_files:
     for uploaded_file in uploaded_files:
         with open(os.path.join(DOCUMENTS_FOLDER, uploaded_file.name), "wb") as f:
             f.write(uploaded_file.read())
     st.success("✅ Uploaded. Now embedding...")
-    embed_and_store_new_docs()
+    embed_new_documents()  # includes both doc and image embedding
     st.success("✅ Done! You can now ask questions.")
     st.rerun()
 
@@ -110,18 +74,23 @@ if os.path.exists(DOCUMENTS_FOLDER):
         for f in os.listdir(DOCUMENTS_FOLDER):
             st.markdown(f"- `{f}`")
 
-# --- Cached Vectorstore Load (only once) ---
+# --- Cached Vectorstore Load ---
 @st.cache_resource
 def get_vectorstore():
     return Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
 
+@st.cache_resource
+def get_image_vectorstore():
+    return Chroma(persist_directory=IMAGE_CHROMA_PATH, embedding_function=embedding_function)
+
 vectorstore = get_vectorstore()
+image_vectorstore = get_image_vectorstore()
 
 # --- Build QA Chain ---
 if st.session_state.chat_chain is None:
     st.session_state.chat_chain = build_qa_chain(vectorstore)
 
-# --- Chat ---
+# --- Chat Input ---
 chat_input = st.chat_input("💬 Ask something about your documents")
 query = st.session_state.pending_followup or chat_input
 st.session_state.pending_followup = None
@@ -135,11 +104,25 @@ if query:
         })
 
     answer = result.get("answer", "")
+    
+    # Extract follow-up questions if present
     if "Follow-up questions:" in answer:
         answer, raw_followups = answer.split("Follow-up questions:")
         followups = [q.strip("-• \n") for q in raw_followups.strip().split("\n") if q.strip()]
 
-    st.session_state.chat_history.append((query, answer.strip()))
+    # --- Retrieve Relevant Image (Top 1) ---
+    relevant_imgs = image_vectorstore.similarity_search(query, k=1)
+    if relevant_imgs:
+        img_meta = relevant_imgs[0].metadata
+        image_path = img_meta.get("image_path")
+        if image_path and os.path.exists(image_path):
+            answer += f"\n\n**📷 Relevant Image:**"
+            st.session_state.chat_history.append((query, answer.strip()))
+        else:
+            st.session_state.chat_history.append((query, answer.strip()))
+    else:
+        st.session_state.chat_history.append((query, answer.strip()))
+
     with open(chat_path, "w") as f:
         json.dump(st.session_state.chat_history, f, indent=2)
 
@@ -149,6 +132,15 @@ for user, bot in st.session_state.chat_history:
         st.markdown(user)
     with st.chat_message("assistant"):
         st.markdown(bot)
+
+        # Show image if caption present in bot text
+        if "**📷 Relevant Image:**" in bot:
+            # Match with image caption again
+            last_img = image_vectorstore.similarity_search(user, k=1)
+            if last_img:
+                img_path = last_img[0].metadata.get("image_path")
+                if img_path and os.path.exists(img_path):
+                    st.image(img_path, use_column_width=True)
 
 # --- Show Follow-up ---
 if followups:
