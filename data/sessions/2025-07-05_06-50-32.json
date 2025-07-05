@@ -1,0 +1,6 @@
+[
+  [
+    "what is clustering",
+    "Answer:\n- Clustering is the process of grouping similar instances together.\n- Similarity is determined by a chosen distance metric (e.g., Euclidean distance in 2D space).  Instances closer to each other are considered more similar.\n- A common example is grouping 2D point patterns, where points clustered together visually represent a group.\n- Several algorithms exist for clustering, including agglomerative clustering."
+  ]
+]
