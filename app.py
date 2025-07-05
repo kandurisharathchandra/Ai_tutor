@@ -143,15 +143,47 @@ if query:
     with open(chat_path, "w") as f:
         json.dump(st.session_state.chat_history, f, indent=2)
 
-# --- Show Chat ---
-for user, bot in st.session_state.chat_history:
+# --- Show Chat + Understanding Check + Follow-ups ---
+for i, (user, bot) in enumerate(st.session_state.chat_history):
     with st.chat_message("user"):
         st.markdown(user)
+
     with st.chat_message("assistant"):
         st.markdown(bot)
 
-# --- Show Follow-up ---
-if followups:
-    st.markdown("**💡 Follow-up questions:**")
-    for fq in followups:
-        st.markdown(f"- {fq}")
+        key_prefix = f"turn_{i}"
+
+        # Only apply logic for the last assistant message
+        if i == len(st.session_state.chat_history) - 1:
+
+            # Understanding buttons
+            if f"{key_prefix}_understood" not in st.session_state:
+                st.markdown("**🤔 Did you understand the topic?**")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("👍 Yes", key=f"{key_prefix}_yes"):
+                        st.session_state[f"{key_prefix}_understood"] = True
+                        st.rerun()
+                with col2:
+                    if st.button("👎 No, explain again", key=f"{key_prefix}_no"):
+                        st.session_state[f"{key_prefix}_understood"] = False
+                        st.rerun()
+            elif st.session_state[f"{key_prefix}_understood"] is False:
+                st.info("🔁 Re-explaining in simpler terms...")
+                clarified_query = user + ". Please explain this more clearly for a beginner."
+                with st.spinner("🤖 Re-thinking..."):
+                    retry_result = st.session_state.chat_chain.invoke({
+                        "question": clarified_query,
+                        "chat_history": st.session_state.chat_history[-5:]
+                    })
+                clarified_answer = retry_result.get("answer", "")
+                st.session_state.chat_history[i] = (user, clarified_answer.strip())
+                del st.session_state[f"{key_prefix}_understood"]
+                st.rerun()
+            elif st.session_state[f"{key_prefix}_understood"] is True and followups:
+                st.markdown("**💡 Follow-up questions:**")
+                for fq in followups:
+                    if st.button(fq, key=f"{key_prefix}_fq_{fq}"):
+                        st.session_state.pending_followup = fq
+                        st.rerun()
+
