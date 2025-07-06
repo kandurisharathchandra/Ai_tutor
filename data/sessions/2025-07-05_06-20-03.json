@@ -1,6 +1,0 @@
-[
-  [
-    "what is classification",
-    "Answer:\n* **Objective:** Classification aims to predict the class label of an unknown object based on pre-existing knowledge about similar objects and their respective classes.\n* **Data Requirement:**  Requires labeled data, meaning each data instance has a known class value. This labeled data is used to train the classification model.\n* **Examples from Context:**\n    * Binary classification in bioinformatics:  Classifying genetic data to detect cancer (cancer vs. non-cancer).\n    * Binary classification in image recognition: Identifying faces in images (face vs. non-face).\n* **Process (Simplified):**  The model learns patterns from the labeled data and uses these patterns to assign new, unlabeled objects to the most probable class."
-  ]
-]

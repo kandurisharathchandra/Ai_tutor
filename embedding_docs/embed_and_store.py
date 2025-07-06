@@ -12,7 +12,7 @@ from document_loaders.load_documents import load_documents_from_folder
 CHROMA_PATH = "chroma_db"
 DOCUMENTS_FOLDER = "data/documents"
 INDEX_FILE = os.path.join(CHROMA_PATH, "indexed_files.json")
-EMBEDDING_MODEL = "thenlper/gte-small"
+EMBEDDING_MODEL = "sentence-transformers/paraphrase-MiniLM-L6-v2"
 
 # Initialize embedding model once
 embedding_function = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)

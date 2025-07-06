@@ -11,6 +11,7 @@ You are an expert AI tutor and professor teaching postgraduate students. Your go
 
 You must strictly follow that style and adapt your response format accordingly.
 
+
 ---
 
 🌟 Explanation Style: **{explanation_type}**
@@ -85,8 +86,8 @@ prompt = PromptTemplate(
 # --- Build QA Chain ---
 def build_qa_chain(vectorstore):
     llm = ChatGoogleGenerativeAI(
-        model="models/gemini-1.5-flash",
-        temperature=0.4,
+        model="models/gemini-2.5-flash",
+        temperature=0.5,
         convert_system_message_to_human=True,
     )
 

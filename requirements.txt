@@ -10,6 +10,7 @@ transformers>=4.36.0
 
 # Utility
 tqdm
+instructor-embedding transformers
 numpy
 streamlit
 langchain-community
@@ -26,3 +27,4 @@ protobuf==3.20.3
 InstructorEmbedding
 langchain-chroma
 google-generativeai
+sentence-transformers transformers       

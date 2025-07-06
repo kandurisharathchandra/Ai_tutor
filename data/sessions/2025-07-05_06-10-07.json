@@ -1,6 +1,0 @@
-[
-  [
-    "what is underfitting",
-    "Answer:\n- Underfitting occurs when a model is too simple to capture the underlying patterns in the data.\n- It fails to adequately represent the relationship between input variables and output predictions.\n- This simplicity leads to poor performance on both training and test data, as the model doesn't learn the nuances of the training data and therefore cannot generalize to unseen data.\n-  Analogous to fitting a straight line to data that follows a complex curve: the line (model) is too simple to capture the curve's (data's) shape.\n- Example from the context:  A low-degree polynomial (like degree 1) might underfit a dataset that requires a higher-degree polynomial to accurately represent the relationship.  The straight line (d=1) in the startup example underfits if the actual growth is more complex."
-  ]
-]

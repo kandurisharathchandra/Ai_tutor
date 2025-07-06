@@ -1,6 +1,0 @@
-[
-  [
-    "what is linear regression",
-    "Answer:\n\n* **Supervised Learning Context:** Linear regression is a supervised learning technique used to predict a *continuous* dependent variable (Y) based on one or more independent variables (X).  Think of predicting 'Price' or 'Weight' based on other factors.\n\n* **Functional Relationship:**  It assumes a functional relationship between the dependent and independent variables. The dependent variable *depends* on the independent variable(s).\n\n* **Simple Linear Regression:** This involves predicting Y based on a *single* predictor variable X.  The relationship is modeled as a straight line:  $Y = \\beta_0 + \\beta_1X + \\epsilon$, where $\\beta_0$ is the intercept, $\\beta_1$ is the slope, and $\\epsilon$ represents the error term.\n\n* **Multiple Linear Regression:** This involves predicting Y based on *multiple* predictor variables $X_1, X_2, ..., X_n$. The relationship is modeled as: $Y = \\beta_0 + \\beta_1X_1 + \\beta_2X_2 + ... + \\beta_nX_n + \\epsilon$.\n\n* **Example (Simple Linear Regression):** Predicting house prices (Y) based on house size (X).  Larger houses (X) tend to have higher prices (Y)."
-  ]
-]

@@ -1,6 +1,0 @@
-[
-  [
-    "what is boosting",
-    "Answer:\n\nBoosting is an ensemble-based machine learning technique.  Unlike bagging, which creates multiple models from bootstrapped datasets and averages their predictions, boosting focuses on sequentially training weak learners.  Each subsequent weak learner is trained on a modified version of the data, weighting instances incorrectly classified by previous learners more heavily.  The final prediction is a weighted combination of the weak learners' predictions, with weights reflecting their individual performance. AdaBoost is a specific type of boosting algorithm.  The provided text also mentions Gradient Boosting Machines (GBM), which uses gradient descent to optimize the weights assigned to the weak learners.  In essence, boosting iteratively improves the model's accuracy by focusing on the \"hard\" cases that previous models struggled with."
-  ]
-]

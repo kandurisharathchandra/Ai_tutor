@@ -1,6 +1,0 @@
-[
-  [
-    "what is clustering and what are the types of clusters",
-    "Clustering is the process of grouping similar data points together into clusters.  The goal is to maximize similarity within each cluster and minimize similarity between different clusters. Think of it like organizing a messy room: you group similar items (like clothes, books, or toys) together to create order.  In the provided context, the example given is grouping 2D point patterns based on their proximity to each other.\n\nThere are several types of clustering algorithms, each with its own approach to defining and finding clusters.  The context mentions two main categories:\n\n* **Hierarchical Clustering:** This type builds a hierarchy of clusters, visualized as a tree.  It can be either *agglomerative* (starting with individual points and merging them) or *divisive* (starting with one big cluster and splitting it).\n* **Density-based Clustering (e.g., DBSCAN):** This type identifies clusters based on the density of data points.  It looks for areas where points are densely packed together, separated by sparser regions."
-  ]
-]
