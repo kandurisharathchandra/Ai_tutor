@@ -7,3 +7,7 @@ models/
 
 # Ignore any other large cache
 .cache/
+*.safetensors
+*.bin
+*.pt
+*.jsonl
