@@ -12,10 +12,16 @@ from document_loaders.load_documents import load_documents_from_folder
 CHROMA_PATH = "chroma_db"
 DOCUMENTS_FOLDER = "data/documents"
 INDEX_FILE = os.path.join(CHROMA_PATH, "indexed_files.json")
-EMBEDDING_MODEL = "sentence-transformers/paraphrase-MiniLM-L6-v2"
 
-# Initialize embedding model once
-embedding_function = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+# 🔄 Updated embedding model: BAAI/bge-small-en-v1.5
+EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
+
+# Initialize embedding function
+embedding_function = HuggingFaceEmbeddings(
+    model_name=EMBEDDING_MODEL,
+    model_kwargs={"device": "cpu"},           # Change to "cuda" if you want GPU
+    encode_kwargs={"normalize_embeddings": True}  # Required for BGE performance
+)
 
 
 def embed_new_documents():

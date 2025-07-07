@@ -15,7 +15,7 @@ load_dotenv()
 
 DOCUMENTS_FOLDER = "data/documents"
 SESSIONS_FOLDER = "data/sessions"
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
 
 os.makedirs(SESSIONS_FOLDER, exist_ok=True)
 os.makedirs(DOCUMENTS_FOLDER, exist_ok=True)

@@ -1,1 +1,9 @@
 .env
+# Ignore Chroma DB
+chroma_db/
+
+# Ignore Hugging Face models (if you downloaded one)
+models/
+
+# Ignore any other large cache
+.cache/
